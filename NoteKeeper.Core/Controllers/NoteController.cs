@@ -3,6 +3,7 @@ using NoteKeeper.Core.Abstracts;
 using NoteKeeper.Core.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,12 @@ namespace NoteKeeper.Core.Controllers
 {
     class NoteController:INoteController
     {
-        private const string liteDBPath = @"D:\litedb.db";
+        private string liteDBPath = @"D:\litedb.db";
+
+        public NoteController()
+        {
+            this.liteDBPath = ConfigurationManager.AppSettings["LiteDBPath"];
+        }
 
         public List<Models.Note> GetAll()
         {
