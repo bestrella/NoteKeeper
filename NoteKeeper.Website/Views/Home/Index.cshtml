@@ -1,0 +1,101 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<section class="row" style="margin-top:32px;" ng-app="myApp" ng-controller="myCtrl">
+    <div class="col-md-10 col-md-offset-1">
+        <form class="form-horizontal" role="form">
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="email">Title:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" placeholder="" ng-model="note.Title">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="pwd">Content:</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" placeholder="" ng-model="note.Content"></textarea>
+                </div>
+            </div>
+            @*<div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <div class="checkbox">
+                            <label><input type="checkbox"> Remember me</label>
+                        </div>
+                    </div>
+                </div>*@
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <a href="#" class="btn btn-default btn-primary btn-block" ng-click="SaveChangesButtonClick()">{{SaveChangesButtonText}}</a>
+                    <a href="#" class="btn btn-default btn-primary btn-block" ng-hide="!isOnEdit" ng-click="ToggleUpdateMode()">Cancel</a>
+                </div>
+            </div>
+        </form>
+
+        <hr style="" />
+    </div>
+
+    <div class="col-md-10 col-md-offset-1">
+        <div class="panel panel-default " ng-repeat="x in notes">
+            <div class="panel-heading">{{x.Title}}</div>
+            <div class="panel-body">{{x.Content}}</div>
+            <div class="panel-footer"><button class="btn btn-sm btn-info" ng-click="UpdateNoteButtonClick(x.Id)">update</button><span>&nbsp;</span><button class="btn btn-sm btn-danger" ng-click="RemoveNote(x.Id)">remove</button></div>
+        </div>
+    </div>
+</section>
+
+@*<script>
+        var app = angular.module('myApp', []);
+
+        //define controller
+        var controller = function ($scope, $http) {
+            //data from db
+            $scope.notes = "";
+            //form models
+            $scope.note = { title: "", contents: "", IsHidden: false, Hits: 0 };
+            //refresh counter
+            $scope.refreshCount = 0;
+
+            $scope.GetNotes = function () {
+                FetchNotesFromAPI();
+                $scope.refreshCount++;
+            }
+
+            $scope.AddNote = function () {
+                var data = $scope.note;
+                SendNoteToAPI(data);
+                FetchNotesFromAPI();
+            }
+
+            $scope.RemoveNote = function (id) {
+                var data = {Id:id};
+                var response = $http.post('/api/note/remove', data);
+            }
+
+
+            //private functions
+            function FetchNotesFromAPI() {
+                $http.get("/api/note/notes")
+                .success(function (response) { $scope.notes = response; });
+            }
+
+            function SendNoteToAPI(data) {
+                var response = $http.post('/api/note/notes', data);
+            }
+
+            //Actions on instantiation
+            $scope.GetNotes();
+        }
+
+        //attach controller
+        app.controller('myCtrl', controller);
+
+</script>*@
+@section scripts {
+    <script src="~/Scripts/angular-controllers/NotesController.js"></script>
+
+    <script>
+        var app = angular.module('myApp', []);
+        app.controller('myCtrl', notesController);
+    </script>
+}
