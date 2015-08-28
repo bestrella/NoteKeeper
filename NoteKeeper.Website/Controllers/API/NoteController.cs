@@ -14,6 +14,7 @@ using System.Web.Http.ExceptionHandling;
 namespace NoteKeeper.Website.Controllers.API
 {
     [RoutePrefix("api/v1/Notes")]
+    [Route("{action=Get}")]
     public class NoteController : ApiController
     {
         INoteController noteController = NoteKeeperFactory.CreateNoteController();
@@ -59,19 +60,82 @@ namespace NoteKeeper.Website.Controllers.API
         }
 
         #region V2
+
         [HttpGet]
-        [Route("~/api/v2/Notes/id/{id:int}")]
-        public Note FindByIdV2(int id)
+        [Route("~/api/v2/notes/{id:int}")]
+        public Note Get(int id)
         {
-            return NoteKeeperFactory.CreateNoteController().Get(id);
+            return this.noteController.Get(id);
         }
 
         [HttpGet]
-        [Route("~/api/v2/Notes")]
-        public List<Note> GetAllV2()
+        [Route("~/api/v2/notes")]
+        public IEnumerable<Note> Get()
         {
-            return NoteKeeperFactory.CreateNoteController().GetAll();
+            return this.noteController.GetAll();
         }
+
+        #region Post Requests
+        [HttpPost]
+        [Route("~/api/v2/notes/add")]
+        public HttpResponseMessage AddV2(Note note)
+        {
+            try
+            {
+                this.noteController.Add(note);
+                var response = this.Request.CreateResponse<Note>(HttpStatusCode.Created, note);
+                //prepare link for the newly created resource.to access it, view it on request header location
+                string uri = Url.Content("/api/v2/notes/") + note.Id;
+                response.Headers.Location = new Uri(uri);
+                return response;
+            }
+            catch (Exception)
+            {
+                var response = this.Request.CreateResponse(HttpStatusCode.InternalServerError);
+                return response;
+            }
+        }
+
+        [HttpPost]
+        [Route("~/api/v2/notes/update")]
+        public HttpResponseMessage UpdateV2(Note note)
+        {
+            try
+            {
+                this.noteController.Update(note);
+                var response = this.Request.CreateResponse<Note>(HttpStatusCode.NoContent, note);
+                //prepare link for the newly created resource.to access it, view it on request header location
+                string uri = Url.Content("/api/v2/notes/") + note.Id;
+                response.Headers.Location = new Uri(uri);
+                return response;
+            }
+            catch (Exception)
+            {
+                var response = this.Request.CreateResponse(HttpStatusCode.InternalServerError);
+                return response;
+            }
+        }
+
+        [HttpPost]
+        [Route("~/api/v2/notes/delete/{id:int}")]
+        public HttpResponseMessage DeleteV2(int id)
+        {
+            try
+            {
+                this.noteController.Delete(id);
+                var response = this.Request.CreateResponse(HttpStatusCode.NoContent);
+                string uri = Url.Content("/api/v2/notes");
+                response.Headers.Location = new Uri(uri);
+                return response;
+            }
+            catch (Exception)
+            {
+                var response = this.Request.CreateResponse(HttpStatusCode.InternalServerError);
+                return response;
+            }
+        } 
+        #endregion
+
         #endregion
 
         #region Exception Handling
